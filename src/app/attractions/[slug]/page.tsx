@@ -30,7 +30,7 @@ async function getAttractionBySlug(slug: string): Promise<Attraction | null> {
     next: { revalidate },
   });
 
-  if (result.ok) {
+  if (!result.ok) {
     console.error(`Failed to fetch attraction: ${result.status}`);
   }
 
