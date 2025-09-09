@@ -32,6 +32,7 @@ async function getAttractionBySlug(slug: string): Promise<Attraction | null> {
 
   if (!result.ok) {
     console.error(`Failed to fetch attraction: ${result.status}`);
+    return null;
   }
 
   const json = await result.json();
