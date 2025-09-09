@@ -57,3 +57,33 @@ async function getAttractionBySlug(slug: string): Promise<Attraction | null> {
     images: attraction.images?.data?.map((img: any) => img.attributes),
   };
 }
+
+// page component
+export default async function AttractionPage({ params }: { params: { slug: string } }) {
+  const attraction = await getAttractionBySlug(params.slug);
+
+  // return 404 page if attraction not found
+  if (!attraction) return notFound();
+
+  return (
+    <main>
+      <h1>{attraction.title}</h1>
+      <p>{attraction.shortDesc}</p>
+
+      {attraction.imageCover?.url && (
+        <img
+          src={`https://api.expeditionlapland.com${attraction.imageCover.url}`}
+          alt={attraction.title}
+          style={{ maxWidth: "100%", height: "auto" }}
+        />
+      )}
+
+      <ul>
+        {attraction.rating && <li>Rating: {attraction.rating}</li>}
+        {attraction.duration && <li>Duration: {attraction.duration}</li>}
+        {attraction.priceSEK && <li>Price: {attraction.priceSEK} SEK</li>}
+        {attraction.location && <li>Location: {attraction.location}</li>}
+      </ul>
+    </main>
+  );
+}
