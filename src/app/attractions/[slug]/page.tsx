@@ -129,32 +129,99 @@ const renderDescription = (description: DescriptionBlock[] | undefined) => {
   });
 };
 
+type PageProps = {
+  params: Promise<{ slug: string }>;
+};
+
 // page component
-export default async function AttractionPage({ params }: { params: { slug: string } }) {
-  const attraction = await getAttractionBySlug(params.slug);
+export default async function AttractionPage(props: PageProps) {
+  // await params (next.js 15 requirement)
+  const { slug } = await props.params;
+
+  const attraction = await getAttractionBySlug(slug);
 
   // return 404 page if attraction not found
   if (!attraction) return notFound();
 
   return (
     <main>
+      <nav>
+        <a href="/attractions">Attractions</a>
+        <span>/</span>
+        <span>{attraction.title}</span>
+      </nav>
+
       <h1>{attraction.title}</h1>
-      <p>{attraction.shortDesc}</p>
+
+      {attraction.category && <span>{attraction.category}</span>}
+      {attraction.shortDesc && <p>{attraction.shortDesc}</p>}
 
       {attraction.imageCover?.url && (
-        <img
+        <Image
           src={`https://api.expeditionlapland.com${attraction.imageCover.url}`}
-          alt={attraction.title}
-          style={{ maxWidth: "100%", height: "auto" }}
+          alt={attraction.imageCover.alternativeText || attraction.title}
+          width={800}
+          height={400}
         />
       )}
 
-      <ul>
-        {attraction.rating && <li>Rating: {attraction.rating}</li>}
-        {attraction.duration && <li>Duration: {attraction.duration}</li>}
-        {attraction.priceSEK && <li>Price: {attraction.priceSEK} SEK</li>}
-        {attraction.location && <li>Location: {attraction.location}</li>}
-      </ul>
+      <div>
+        <div>
+          <h2>Activity Details</h2>
+          <ul>
+            {attraction.rating && <li>Rating: {attraction.rating}/5</li>}
+            {attraction.duration && <li>Duration: {attraction.duration}</li>}
+            {attraction.priceSEK && <li>Price: {attraction.priceSEK} SEK</li>}
+            {attraction.location && <li>Location: {attraction.location}</li>}
+            {attraction.groupOfPeople && <li>Group Size: Up to {attraction.groupOfPeople} people</li>}
+            {attraction.activity && <li>Activity Level: {attraction.activity}</li>}
+            {attraction.kids && <li>Age Recommendation: {attraction.kids}</li>}
+          </ul>
+        </div>
+
+        <div>
+          <h2>Availability</h2>
+          {attraction.availableFrom && attraction.availableTo && (
+            <p>
+              Available from {new Date(attraction.availableFrom).toLocaleDateString()} to{" "}
+              {new Date(attraction.availableTo).toLocaleDateString()}
+            </p>
+          )}
+          {attraction.coordinates?.DD && (
+            <div>
+              <p>Coordinates:</p>
+              <p>Latitude: {attraction.coordinates.DD.lat}</p>
+              <p>Longitude: {attraction.coordinates.DD.lng}</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {attraction.description && attraction.description.length > 0 && (
+        <div>
+          <h2>Description</h2>
+          <div>{renderDescription(attraction.description)}</div>
+        </div>
+      )}
+
+      {attraction.images && attraction.images.length > 0 && (
+        <div>
+          <h2>Gallery</h2>
+          <div>
+            {attraction.images.map((image) => (
+              <Image
+                key={image.id}
+                src={`https://api.expeditionlapland.com${image.url}`}
+                alt={image.alternativeText || attraction.title}
+                width={300}
+                height={200}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {attraction.updatedAt && <p>Last updated: {new Date(attraction.updatedAt).toLocaleDateString()}</p>}
     </main>
   );
 }
