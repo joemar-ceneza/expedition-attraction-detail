@@ -59,26 +59,34 @@ async function getAttractionBySlug(slug: string): Promise<Attraction | null> {
   }
 
   const json = await result.json();
+  if (!json.data || json.data.length === 0) return null;
 
-  const attraction = json?.data?.[0].attributes;
-  const id = json?.data?.[0]?.id;
+  const record = json.data[0];
+  if (!record) return null;
 
-  // return null if no record found
-  if (!attraction || !id) return null;
+  // handle both strapi v4 nested structure and flat structure
+  const attributes = record.attributes || record;
 
   return {
-    id,
-    slug,
-    title: attraction.title,
-    location: attraction.location,
-    rating: attraction.rating,
-    duration: attraction.duration,
-    priceSEK: attraction.priceSEK,
-    description: attraction.description,
-    shortDesc: attraction.shortDesc,
-    imagePoster: attraction.imagePoster?.data?.attributes,
-    imageCover: attraction.imageCover?.data?.attributes,
-    images: attraction.images?.data?.map((img: any) => img.attributes),
+    id: record.id,
+    title: attributes.title,
+    slug: attributes.slug,
+    location: attributes.location,
+    rating: attributes.rating,
+    duration: attributes.duration,
+    priceSEK: attributes.priceSEK,
+    category: attributes.category,
+    availableFrom: attributes.availableFrom,
+    availableTo: attributes.availableTo,
+    groupOfPeople: attributes.groupOfPeople,
+    kids: attributes.kids,
+    activity: attributes.activity,
+    coordinates: attributes.coordinates,
+    description: attributes.description,
+    shortDesc: attributes.shortDesc,
+    imageCover: attributes.imageCover?.data?.attributes || attributes.imageCover,
+    images: attributes.images?.data?.map((img: any) => img.attributes) || attributes.images,
+    updatedAt: attributes.updatedAt,
   };
 }
 
