@@ -111,6 +111,24 @@ export async function generateStaticParams() {
   }
 }
 
+// render rich text description blocks
+const renderDescription = (description: DescriptionBlock[] | undefined) => {
+  if (!description) return null;
+
+  return description.map((block, index) => {
+    if (block.type === "paragraph") {
+      return (
+        <p key={index}>
+          {block.children.map((child, childIndex) => (
+            <span key={childIndex}>{child.text}</span>
+          ))}
+        </p>
+      );
+    }
+    return null;
+  });
+};
+
 // page component
 export default async function AttractionPage({ params }: { params: { slug: string } }) {
   const attraction = await getAttractionBySlug(params.slug);
