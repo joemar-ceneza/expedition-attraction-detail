@@ -10,45 +10,49 @@ export const dynamicParams = true;
 
 // fetch attraction data from strapi using slug
 async function getAttractionBySlug(slug: string): Promise<Attraction | null> {
-  const result = await fetch(`${API_BASE_URL}/api/atrakcjes?filters[slug][$eq]=${slug}&populate=*`, {
-    next: { revalidate },
-  });
+  try {
+    const result = await fetch(`${API_BASE_URL}/api/atrakcjes?filters[slug][$eq]=${slug}&populate=*`, {
+      next: { revalidate },
+    });
 
-  if (!result.ok) {
-    console.error(`Failed to fetch attraction: ${result.status}`);
+    if (!result.ok) {
+      console.error(`Failed to fetch attraction: ${result.status}`);
+      return null;
+    }
+
+    const json = await result.json();
+    if (!json.data || json.data.length === 0) return null;
+
+    const record = json.data[0];
+    if (!record) return null;
+
+    // handle both strapi v4 nested structure and flat structure
+    const attributes = record.attributes || record;
+
+    return {
+      id: record.id,
+      title: attributes.title,
+      slug: attributes.slug,
+      location: attributes.location,
+      rating: attributes.rating,
+      duration: attributes.duration,
+      priceSEK: attributes.priceSEK,
+      category: attributes.category,
+      availableFrom: attributes.availableFrom,
+      availableTo: attributes.availableTo,
+      groupOfPeople: attributes.groupOfPeople,
+      kids: attributes.kids,
+      activity: attributes.activity,
+      coordinates: attributes.coordinates,
+      description: attributes.description,
+      shortDesc: attributes.shortDesc,
+      imageCover: attributes.imageCover?.data?.attributes || attributes.imageCover,
+      images: attributes.images?.data?.map((img: any) => img.attributes) || attributes.images,
+      updatedAt: attributes.updatedAt,
+    };
+  } catch (error) {
     return null;
   }
-
-  const json = await result.json();
-  if (!json.data || json.data.length === 0) return null;
-
-  const record = json.data[0];
-  if (!record) return null;
-
-  // handle both strapi v4 nested structure and flat structure
-  const attributes = record.attributes || record;
-
-  return {
-    id: record.id,
-    title: attributes.title,
-    slug: attributes.slug,
-    location: attributes.location,
-    rating: attributes.rating,
-    duration: attributes.duration,
-    priceSEK: attributes.priceSEK,
-    category: attributes.category,
-    availableFrom: attributes.availableFrom,
-    availableTo: attributes.availableTo,
-    groupOfPeople: attributes.groupOfPeople,
-    kids: attributes.kids,
-    activity: attributes.activity,
-    coordinates: attributes.coordinates,
-    description: attributes.description,
-    shortDesc: attributes.shortDesc,
-    imageCover: attributes.imageCover?.data?.attributes || attributes.imageCover,
-    images: attributes.images?.data?.map((img: any) => img.attributes) || attributes.images,
-    updatedAt: attributes.updatedAt,
-  };
 }
 
 // pre-generate static paths for all known slugs at build time (ISR)
