@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { DescriptionBlock, Attraction } from "@/types/attraction";
+import { API_BASE_URL } from "@/constants/urls";
 
 // ISR: revalidate every hour (3600 seconds)
 export const revalidate = 3600;
@@ -9,7 +10,7 @@ export const dynamicParams = true;
 
 // fetch attraction data from strapi using slug
 async function getAttractionBySlug(slug: string): Promise<Attraction | null> {
-  const result = await fetch(`https://api.expeditionlapland.com/api/atrakcjes?filters[slug][$eq]=${slug}&populate=*`, {
+  const result = await fetch(`${API_BASE_URL}/api/atrakcjes?filters[slug][$eq]=${slug}&populate=*`, {
     next: { revalidate },
   });
 
@@ -53,7 +54,7 @@ async function getAttractionBySlug(slug: string): Promise<Attraction | null> {
 // pre-generate static paths for all known slugs at build time (ISR)
 export async function generateStaticParams() {
   try {
-    const result = await fetch("https://api.expeditionlapland.com/api/atrakcjes?fields[0]=slug", {
+    const result = await fetch(`${API_BASE_URL}/api/atrakcjes?fields[0]=slug`, {
       next: { revalidate: 3600 }, // revalidate slugs every hour
     });
 
@@ -118,7 +119,7 @@ export default async function AttractionPage(props: PageProps) {
 
       {attraction.imageCover?.url && (
         <Image
-          src={`https://api.expeditionlapland.com${attraction.imageCover.url}`}
+          src={`${API_BASE_URL}${attraction.imageCover.url}`}
           alt={attraction.imageCover.alternativeText || attraction.title}
           width={800}
           height={400}
@@ -171,7 +172,7 @@ export default async function AttractionPage(props: PageProps) {
             {attraction.images.map((image) => (
               <Image
                 key={image.id}
-                src={`https://api.expeditionlapland.com${image.url}`}
+                src={`${API_BASE_URL}${image.url}`}
                 alt={image.alternativeText || attraction.title}
                 width={300}
                 height={200}
