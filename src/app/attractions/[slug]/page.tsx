@@ -90,6 +90,27 @@ async function getAttractionBySlug(slug: string): Promise<Attraction | null> {
   };
 }
 
+// pre-generate static paths for all known slugs at build time (ISR)
+export async function generateStaticParams() {
+  try {
+    const result = await fetch("https://api.expeditionlapland.com/api/atrakcjes?fields[0]=slug", {
+      next: { revalidate: 3600 }, // revalidate slugs every hour
+    });
+
+    if (!result.ok) return [];
+    const json = await result.json();
+
+    return json.data
+      .map((item: any) => {
+        const slug = item.attributes?.slug || item.slug;
+        return slug ? { slug } : null;
+      })
+      .filter(Boolean);
+  } catch (error) {
+    return [];
+  }
+}
+
 // page component
 export default async function AttractionPage({ params }: { params: { slug: string } }) {
   const attraction = await getAttractionBySlug(params.slug);
