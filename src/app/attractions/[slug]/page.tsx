@@ -10,6 +10,19 @@ export const dynamicParams = true;
 type Media = {
   id: number;
   url: string;
+  alternativeText?: string;
+};
+
+type Coordinates = {
+  DD?: {
+    lat: number;
+    lng: number;
+  };
+};
+
+type DescriptionBlock = {
+  type: string;
+  children: { type: string; text: string }[];
 };
 
 type Attraction = {
@@ -20,11 +33,18 @@ type Attraction = {
   rating?: number;
   duration?: string;
   priceSEK?: number;
-  description?: any[];
+  category?: string;
+  availableFrom?: string;
+  availableTo?: string;
+  groupOfPeople?: number;
+  kids?: string;
+  activity?: string;
+  coordinates?: Coordinates;
+  description?: DescriptionBlock[];
   shortDesc?: string;
-  imagePoster?: Media;
   imageCover?: Media;
   images?: Media[];
+  updatedAt?: string;
 };
 
 // fetch attraction data from strapi using slug
