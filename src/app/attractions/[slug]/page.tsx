@@ -1,7 +1,10 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 
-// define revalidation time in seconds (ISR)
-export const revalidate = 60;
+// ISR: revalidate every hour (3600 seconds)
+export const revalidate = 3600;
+// allow dynamic generation for slugs not pre-generated at build time
+export const dynamicParams = true;
 
 // define typescript types for attraction data
 type Media = {
