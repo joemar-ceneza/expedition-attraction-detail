@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import { DescriptionBlock, Attraction } from "@/types/attraction";
 
 // ISR: revalidate every hour (3600 seconds)
 export const revalidate = 3600;

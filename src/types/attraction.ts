@@ -1,23 +1,23 @@
 // define typescript types for attraction data
-type Media = {
+export type Media = {
   id: number;
   url: string;
   alternativeText?: string;
 };
 
-type Coordinates = {
+export type Coordinates = {
   DD?: {
     lat: number;
     lng: number;
   };
 };
 
-type DescriptionBlock = {
+export type DescriptionBlock = {
   type: string;
   children: { type: string; text: string }[];
 };
 
-type Attraction = {
+export type Attraction = {
   id: number;
   title: string;
   slug: string;
