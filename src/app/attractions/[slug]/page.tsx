@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { DescriptionBlock, Attraction } from "@/types/attraction";
 import { API_BASE_URL } from "@/constants/urls";
 
@@ -63,7 +64,7 @@ async function getAttractionBySlug(slug: string): Promise<Attraction | null> {
       images: attributes.images?.data?.map((img: any) => img.attributes) || attributes.images,
       updatedAt: attributes.updatedAt,
     };
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -89,7 +90,7 @@ export async function generateStaticParams() {
         return slug ? { slug } : null;
       })
       .filter(Boolean);
-  } catch (error) {
+  } catch {
     return [];
   }
 }
@@ -137,7 +138,7 @@ export default async function AttractionPage(props: PageProps) {
   return (
     <main>
       <nav>
-        <a href="/attractions">Attractions</a>
+        <Link href={"/attractions"}>Attractions</Link>
         <span>/</span>
         <span>{attraction.title}</span>
       </nav>
