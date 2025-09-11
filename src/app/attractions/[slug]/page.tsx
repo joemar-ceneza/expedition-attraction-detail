@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { DescriptionBlock, Attraction } from "@/types/attraction";
+import { Media, DescriptionBlock, Attraction } from "@/types/attraction";
 import { API_BASE_URL } from "@/constants/urls";
 
 // ISR: revalidate every hour (3600 seconds)
@@ -61,7 +61,7 @@ async function getAttractionBySlug(slug: string): Promise<Attraction | null> {
       // handle nested image data structure in Strapi
       imageCover: attributes.imageCover?.data?.attributes || attributes.imageCover,
       // map through images array and extract attributes
-      images: attributes.images?.data?.map((img: any) => img.attributes) || attributes.images,
+      images: attributes.images?.data?.map((img: Media) => img.attributes) || attributes.images,
       updatedAt: attributes.updatedAt,
     };
   } catch {
@@ -85,7 +85,7 @@ export async function generateStaticParams() {
 
     // extract slugs from api response, handling different response structures
     return json.data
-      .map((item: any) => {
+      .map((item: { attributes?: { slug?: string }; slug?: string }) => {
         const slug = item.attributes?.slug || item.slug;
         return slug ? { slug } : null;
       })
