@@ -1,8 +1,5 @@
-// next.config.js
 module.exports = {
   images: {
-    domains: ["api.expeditionlapland.com"], // Add your domain here
-    // Alternatively, use remotePatterns for more control:
     remotePatterns: [
       {
         protocol: "https",
