@@ -1,23 +1,40 @@
 // define typescript types for attraction data
-export type Media = {
+export interface Media {
   id: number;
-  url: string;
-  alternativeText?: string;
-};
+  attributes: {
+    id: number;
+    name: string;
+    alternativeText: string | null;
+    caption: string | null;
+    width: number;
+    height: number;
+    formats: Record<string, unknown>;
+    hash: string;
+    ext: string;
+    mime: string;
+    size: number;
+    url: string;
+    previewUrl: string | null;
+    provider: string;
+    provider_metadata: Record<string, unknown>;
+    createdAt: string;
+    updatedAt: string;
+  };
+}
 
-export type Coordinates = {
+export interface Coordinates {
   DD?: {
     lat: number;
     lng: number;
   };
-};
+}
 
-export type DescriptionBlock = {
+export interface DescriptionBlock {
   type: string;
   children: { type: string; text: string }[];
-};
+}
 
-export type Attraction = {
+export interface Attraction {
   id: number;
   title: string;
   slug: string;
@@ -34,7 +51,7 @@ export type Attraction = {
   coordinates?: Coordinates;
   description?: DescriptionBlock[];
   shortDesc?: string;
-  imageCover?: Media;
-  images?: Media[];
+  imageCover?: Media["attributes"];
+  images?: Media["attributes"][];
   updatedAt?: string;
-};
+}
